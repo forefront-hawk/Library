@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en" data-device="desktop" data-self-device="desktop" data-hx-device="desktop" data-ui-theme="ui-gold" data-cc-theme="cc-obsidian">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HawkLibrary — 3D Ptolemaic Alexandria &amp; Thoth Fantasy RPG</title>
+<meta name="author" content="Forefront Hawk (forefronthawk.com / talon.forefronthawk.com / oar.forefronthawk.com) &amp; Gemini Aargon">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --bg: #070A12;
+    --bg-panel: #0D1322;
+    --bg-card: #131C31;
+    --bg-code: #060911;
+    --accent: #D4AF37;
+    --accent-soft: rgba(212, 175, 55, 0.16);
+    --cyan: #00F5D4;
+    --cyan-soft: rgba(0, 245, 212, 0.14);
+    --text: #F8FAFC;
+    --text-muted: #94A3B8;
+    --border: rgba(212, 175, 55, 0.36);
+    --success: #10B981;
+    --danger: #F43F5E;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+
+  /* 14 HawkChroma UI Themes */
+  html[data-ui-theme="ui-gold"] { --bg: #070A12; --bg-panel: #0D1322; --bg-card: #131C31; --accent: #D4AF37; --cyan: #00F5D4; --text: #F8FAFC; --border: rgba(212, 175, 55, 0.38); }
+  html[data-ui-theme="ui-cyberpunk"] { --bg: #090414; --bg-panel: #130926; --bg-card: #1D0F38; --accent: #FF2A85; --cyan: #00F0FF; --text: #FDF2F8; --border: rgba(255, 42, 133, 0.45); }
+  html[data-ui-theme="ui-matrix"] { --bg: #020B05; --bg-panel: #06170B; --bg-card: #0A2412; --accent: #00FF66; --cyan: #72FFB6; --text: #E2FBE8; --border: rgba(0, 255, 102, 0.4); }
+  html[data-ui-theme="ui-tactical"] { --bg: #040D14; --bg-panel: #081824; --bg-card: #0D2333; --accent: #00F5D4; --cyan: #38BDF8; --text: #F0F9FF; --border: rgba(0, 245, 212, 0.42); }
+  html[data-ui-theme="ui-daylight"] { --bg: #F1F5F9; --bg-panel: #FFFFFF; --bg-card: #F8FAFC; --accent: #B45309; --cyan: #0284C7; --text: #0F172A; --text-muted: #475569; --bg-code: #0F172A; --border: rgba(180, 83, 9, 0.32); }
+  html[data-ui-theme="ui-atlantis"] { --bg: #03121C; --bg-panel: #072030; --bg-card: #0C2E44; --accent: #22D3EE; --cyan: #FACC15; --text: #ECFEFF; --border: rgba(34, 211, 238, 0.4); }
+  html[data-ui-theme="ui-crimson"] { --bg: #120608; --bg-panel: #1F0A0E; --bg-card: #2D1016; --accent: #FB7185; --cyan: #FBBF24; --text: #FFF1F2; --border: rgba(251, 113, 133, 0.4); }
+  html[data-ui-theme="ui-amethyst"] { --bg: #0D0717; --bg-panel: #170D29; --bg-card: #22143B; --accent: #C084FC; --cyan: #2DD4BF; --text: #FAF5FF; --border: rgba(192, 132, 252, 0.4); }
+  html[data-ui-theme="ui-obsidian"] { --bg: #050507; --bg-panel: #0E0E12; --bg-card: #16161D; --accent: #E2E8F0; --cyan: #38BDF8; --text: #F8FAFC; --border: rgba(226, 232, 240, 0.28); }
+  html[data-ui-theme="ui-solar"] { --bg: #140B03; --bg-panel: #241406; --bg-card: #331D09; --accent: #F97316; --cyan: #FDE047; --text: #FFF7ED; --border: rgba(249, 115, 22, 0.42); }
+  html[data-ui-theme="ui-arctic"] { --bg: #07111A; --bg-panel: #0D1E2E; --bg-card: #132B40; --accent: #7DD3FC; --cyan: #A7F3D0; --text: #F0F9FF; --border: rgba(125, 211, 252, 0.4); }
+  html[data-ui-theme="ui-emerald"] { --bg: #04120C; --bg-panel: #072117; --bg-card: #0C3022; --accent: #34D399; --cyan: #FBBF24; --text: #ECFDF5; --border: rgba(52, 211, 153, 0.4); }
+  html[data-ui-theme="ui-synthwave"] { --bg: #11051C; --bg-panel: #1E0A30; --bg-card: #2B1045; --accent: #F472B6; --cyan: #60A5FA; --text: #FDF4FF; --border: rgba(244, 114, 182, 0.42); }
+  html[data-ui-theme="ui-monolith"] { --bg: #0B0F17; --bg-panel: #141B29; --bg-card: #1D273B; --accent: #94A3B8; --cyan: #38BDF8; --text: #F1F5F9; --border: rgba(148, 163, 184, 0.35); }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 14px;
+    line-height: 1.45;
+  }
+
+  /* 4-Posture Shell */
+  .app-shell {
+    max-width: 1460px;
+    margin: 0 auto;
+    transition: max-width 0.25s ease;
+  }
+  html[data-device="mobile"] .app-shell {
+    max-width: 430px;
+    border: 2px solid var(--accent);
+    border-radius: 22px;
+    padding: 10px;
+    background: var(--bg-panel);
+  }
+  html[data-device="tablet"] .app-shell {
+    max-width: 1024px;
+    border: 2px solid var(--cyan);
+    border-radius: 16px;
+    padding: 12px;
+  }
+  html[data-device="fold"] .fold-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 16px 1fr !important;
+    gap: 12px;
+  }
+  .fold-hinge {
+    display: none;
+    background: repeating-linear-gradient(180deg, var(--accent) 0, var(--accent) 6px, transparent 6px, transparent 14px);
+    border-left: 1px solid var(--cyan);
+    border-right: 1px solid var(--cyan);
+    border-radius: 99px;
+    min-height: 360px;
+  }
+  html[data-device="fold"] .fold-hinge { display: block; }
+
+  .top-bar {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .badge-pill {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    font-weight: 700;
+  }
+  .badge-pill.cyan {
+    background: var(--cyan-soft);
+    color: var(--cyan);
+    border-color: rgba(0, 245, 212, 0.4);
+  }
+  .btn {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 11px;
+    font-size: 0.79rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.14s ease;
+    user-select: none;
+  }
+  .btn:hover { border-color: var(--cyan); transform: translateY(-1px); }
+  .btn.active, .btn-primary {
+    background: var(--accent);
+    color: #070A12;
+    border-color: var(--accent);
+    font-weight: 800;
+  }
+  .btn-cyan {
+    background: var(--cyan);
+    color: #070A12;
+    border-color: var(--cyan);
+    font-weight: 800;
+  }
+  .select-ctrl, .text-input {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.8rem;
+  }
+
+  /* Main 3D RPG + Ancient Knowledge Asset Library Layout */
+  .rpg-main-grid {
+    display: grid;
+    grid-template-columns: 1.22fr 0.78fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 1080px) { .rpg-main-grid { grid-template-columns: 1fr; } }
+  html[data-device="mobile"] .rpg-main-grid,
+  html[data-device="tablet"] .rpg-main-grid { grid-template-columns: 1fr; }
+
+  .panel-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+  }
+
+  .rpg-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  html[data-device="mobile"] .rpg-stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .stat-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+  }
+  .stat-label { font-size: 0.67rem; color: var(--text-muted); text-transform: uppercase; }
+  .stat-val { font-family: var(--font-mono); font-size: 0.94rem; font-weight: 800; color: var(--cyan); }
+
+  /* 3D Ptolemaic Alexandria Viewport */
+  .vr-stage-wrap {
+    position: relative;
+    width: 100%;
+    height: 430px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+    background: #1B150E;
+  }
+  html[data-device="mobile"] .vr-stage-wrap { height: 300px; }
+  #alexandria3DContainer {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
+  #alexandria3DContainer:active { cursor: grabbing; }
+  .hud-top-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .hud-chip {
+    background: rgba(14, 11, 8, 0.8);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.73rem;
+    color: #FDE68A;
+    backdrop-filter: blur(4px);
+  }
+  .hud-bottom-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(14, 11, 8, 0.8);
+    border: 1px solid rgba(0, 245, 212, 0.5);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.71rem;
+    color: var(--cyan);
+    pointer-events: none;
+  }
+
+  .rpg-controls-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .rpg-ctrl-btn { justify-content: center; padding: 10px 6px; font-weight: 800; }
+
+  .dialogue-box {
+    background: var(--bg-code);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    min-height: 60px;
+  }
+
+  /* Pinakes Vault */
+  .scroll-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+    max-height: 255px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .scroll-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: left;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 0.75rem;
+  }
+  .scroll-card:hover, .scroll-card.selected {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 1px var(--cyan);
+  }
+  .scroll-card.locked { opacity: 0.72; border-style: dashed; }
+
+  .code-textarea {
+    width: 100%;
+    background: var(--bg-code);
+    color: #E2E8F0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    line-height: 1.42;
+    resize: vertical;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Lower Dual Grid */
+  .lower-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 1024px) { .lower-grid { grid-template-columns: 1fr; } }
+  html[data-device="mobile"] .lower-grid { grid-template-columns: 1fr; }
+
+  .synth-box {
+    max-width: 100%;
+    margin: 0 auto;
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--bg-panel);
+  }
+  #waveCanvas {
+    width: 100%;
+    max-width: 680px;
+    height: 90px;
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: block;
+  }
+  .keycap-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+  }
+  html[data-device="mobile"] .keycap-grid { grid-template-columns: repeat(5, 1fr); }
+  .keycap-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 3px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .status-toast {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    background: var(--bg-panel);
+    color: var(--text);
+    border: 2px solid var(--cyan);
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .status-toast.visible { opacity: 1; }
+
+  .hawk-footer {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+  }
+</style>
+</head>
+<body data-device="desktop" data-self-device="desktop" data-hx-device="desktop">
+  <!-- Powered by talon.Forefronthawk | Serial Guard: FH-GA-ΩΑΡ-ACTIVE -->
+  <div class="app-shell" id="hawkLibraryAppShell">
+
+    <!-- TOP COMMAND BAR -->
+    <header class="top-bar" id="hawkLibraryHeader">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <strong style="font-size: 1.18rem;">🏛️ HAWKLIBRARY — 3D PTOLEMAIC ALEXANDRIA &amp; THOTH FANTASY RPG</strong>
+          <span class="badge-pill" id="badgeOuterSerial">FH-GA-ΩΑΡ-20261118-MFF-G01-HTM-26D07CB2</span>
+          <span class="badge-pill cyan" id="badgeSeed">CTVML Seed 0xC9483045 · 3D Sunlit Egypt</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 3px;">
+          Ancient Knowledge Asset Library &amp; 3D Discovery RPG · Powered by <strong>Forefront Hawk</strong> (<code>forefronthawk.com</code> / <code>talon.forefronthawk.com</code> / <code>oar.forefronthawk.com</code> / <code>Michael@forefronthawk.com</code>) &amp; <strong>Gemini Aargon</strong>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px;">
+        <button type="button" class="btn active" id="btnPostureDesktop">🖥️ Desktop</button>
+        <button type="button" class="btn" id="btnPostureMobile">📱 Mobile 430</button>
+        <button type="button" class="btn" id="btnPostureFold">📖 Fold 50/50</button>
+        <button type="button" class="btn" id="btnPostureTablet">📟 Tablet 1024</button>
+
+        <select id="uiThemeSelect" class="select-ctrl" aria-label="HawkChroma UI Theme">
+          <option value="ui-gold">Chroma: Sophisticated Gold</option>
+          <option value="ui-cyberpunk">Chroma: Cyberpunk Neon</option>
+          <option value="ui-matrix">Chroma: Matrix CRT</option>
+          <option value="ui-tactical">Chroma: HawkX Tactical Cyan</option>
+          <option value="ui-daylight">Chroma: Studio Daylight</option>
+          <option value="ui-atlantis">Chroma: Atlantis Saeculurim</option>
+          <option value="ui-crimson">Chroma: Crimson Raptor</option>
+          <option value="ui-amethyst">Chroma: Royal Amethyst</option>
+          <option value="ui-obsidian">Chroma: Obsidian Stealth</option>
+          <option value="ui-solar">Chroma: Solar Flare</option>
+          <option value="ui-arctic">Chroma: Arctic Frost</option>
+          <option value="ui-emerald">Chroma: Emerald Forest</option>
+          <option value="ui-synthwave">Chroma: Synthwave Sunset</option>
+          <option value="ui-monolith">Chroma: Monolith Slate</option>
+        </select>
+
+        <button type="button" class="btn" id="btnToggleAudioGuard">🔇 0dB Silent Guard: ON</button>
+      </div>
+    </header>
+
+    <!-- MAIN 3D RPG & ANCIENT KNOWLEDGE ASSET LIBRARY WORKBENCH -->
+    <main class="rpg-main-grid" id="hawkLibraryMainGrid">
+
+      <!-- LEFT: PLAYABLE 3D THREE.JS PTOLEMAIC ALEXANDRIA GREAT LIBRARY -->
+      <section class="panel-card" id="rpgStagePanel">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+          <strong style="color: var(--accent); font-size: 0.94rem;">☀️ 3D GREAT LIBRARY OF ALEXANDRIA — PTOLEMAIC GOLDEN HOUR</strong>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-cyan" id="btnToggleCamView">🎥 Camera: 3rd-Person Scribe (C)</button>
+            <button type="button" class="btn btn-primary" id="btnCastWard">✨ Preservation Ward (Space)</button>
+            <button type="button" class="btn" id="btnUnlockAllScrolls">🔓 Unlock All 8 Scrolls</button>
+            <button type="button" class="btn" id="btnResetRpg">↺ Reset Hall</button>
+          </div>
+        </div>
+
+        <!-- RPG Character Stats HUD -->
+        <div class="rpg-stats-bar">
+          <div class="stat-chip"><div class="stat-label">Scribe Level</div><div class="stat-val" id="statLevel">Lv. 1 (0 XP)</div></div>
+          <div class="stat-chip"><div class="stat-label">Wisdom (WIS)</div><div class="stat-val" id="statWis">14</div></div>
+          <div class="stat-chip"><div class="stat-label">Arcana (ARC)</div><div class="stat-val" id="statArc">12</div></div>
+          <div class="stat-chip"><div class="stat-label">Scrolls Saved</div><div class="stat-val" id="statScrolls">1 / 8</div></div>
+          <div class="stat-chip"><div class="stat-label">Embers Banished</div><div class="stat-val" id="statEmbers">0</div></div>
+        </div>
+
+        <!-- 3D Three.js Viewport -->
+        <div class="vr-stage-wrap">
+          <div id="alexandria3DContainer"></div>
+          <div class="hud-top-bar">
+            <div class="hud-chip" id="hudLocationChip">🏛️ Great Library Colonnade · Sanctuary of Thoth</div>
+            <div class="hud-chip" id="hudCoordsChip" style="font-family: var(--font-mono); color: var(--cyan);">Pos: (0.0, 9.5)</div>
+          </div>
+          <div class="hud-bottom-hint">
+            WASD / Arrows: Explore 3D Colonnade · Drag Mouse: Orbit Camera · Click Glowing 3D Scrolls · Space: Banish Fire Embers
+          </div>
+        </div>
+
+        <!-- On-Screen Touch / Click Movement + Action Controls -->
+        <div class="rpg-controls-strip">
+          <button type="button" class="btn rpg-ctrl-btn" id="btnMoveLeft">⬅️ West (A)</button>
+          <button type="button" class="btn rpg-ctrl-btn" id="btnMoveUp">⬆️ North (W)</button>
+          <button type="button" class="btn rpg-ctrl-btn" id="btnMoveDown">⬇️ South (S)</button>
+          <button type="button" class="btn rpg-ctrl-btn" id="btnMoveRight">➡️ East (D)</button>
+          <button type="button" class="btn btn-cyan rpg-ctrl-btn" id="btnInteractNpc">🗣️ Consult / Claim (E)</button>
+        </div>
+
+        <!-- Thoth & Scholars Narrative Dialogue Box -->
+        <div class="dialogue-box" id="rpgDialogueBox">
+          <strong style="color: var(--accent);">🦅 Thoth, Keeper of Alexandria:</strong> Welcome to Ptolemaic Alexandria, Scribe! Explore the sunlit sandstone colonnade in 3D, press <strong>C</strong> to toggle between hooded 3rd-Person Scribe and 1st-Person Discovery Tour views, cast your Preservation Ward (<strong>Space</strong>) to banish fire embers, and rescue all 8 Ancient Knowledge Scrolls for HawkSuite.
+        </div>
+      </section>
+
+      <!-- RIGHT: PINAKES ANCIENT KNOWLEDGE ASSET LIBRARY & HAWKSUITE EXPORTER -->
+      <aside class="panel-card" id="assetLibraryPanel">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px;">
+          <strong style="color: var(--cyan); font-size: 0.94rem;">📚 PINAKES ANCIENT KNOWLEDGE ASSET VAULT</strong>
+          <span class="badge-pill cyan" id="vaultStatusBadge">1 / 8 Rescued</span>
+        </div>
+
+        <input type="text" id="scrollSearchInput" class="text-input" placeholder="Search scrolls (Thoth, Euclid, Hero, Hypatia, Pharos)..." aria-label="Search Ancient Knowledge Scrolls">
+
+        <div class="scroll-grid" id="scrollVaultGrid"></div>
+
+        <!-- Selected Scroll Lore & RPG Buff -->
+        <div id="selectedScrollLoreBox" style="background: var(--bg-card); border-left: 3px solid var(--cyan); border-radius: 8px; padding: 9px 10px; font-size: 0.78rem;">
+          <strong style="color: var(--accent);">📜 The Emerald Tablet of Thoth</strong> — Hermetic Axiom Core (+5 WIS, +4 ARC). Click any scroll to inspect its historical record and export its standalone HawkSuite HTML asset code.
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong style="font-size: 0.81rem; color: var(--accent);">💻 Exportable Ancient Knowledge Asset HTML</strong>
+          <span id="assetCodeSizeLabel" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan);">Standalone HTML5</span>
+        </div>
+
+        <textarea id="scrollAssetCodeOutput" class="code-textarea" rows="6" readonly aria-label="Selected Ancient Knowledge Scroll HTML Asset Code"></textarea>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto;">
+          <button type="button" class="btn btn-primary" id="btnDownloadScrollHtml">📥 Download Scroll Asset (.HTML)</button>
+          <button type="button" class="btn btn-cyan" id="btnCopyScrollHtml">📋 Copy Asset HTML</button>
+          <button type="button" class="btn" id="btnExportFullLibraryJson">📦 Export Full HawkLibrary (.JSON)</button>
+        </div>
+      </aside>
+    </main>
+
+    <!-- LOWER DUAL DECK: PRESERVED #hawkStudioRoot SYNTH + THOTH'S QUEST LOG & SCHOLARS -->
+    <section class="lower-grid fold-grid" id="lowerDeckSection">
+
+      <div class="synth-box" id="hawkStudioRoot">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;">
+          <h1 id="synthTitle" style="font-size: 1.08rem; margin: 0; color: var(--accent);">🎹 HawkStudio Chromatic &amp; Modal Synth</h1>
+          <span class="badge-pill">Alexandrian Lyre &amp; Scroll Sonifier</span>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0;">
+          <label for="scaleModeSelect" style="font-size: 0.77rem; color: var(--text-muted);">Scale:</label>
+          <select id="scaleModeSelect" class="select-ctrl">
+            <option value="chromatic">Chromatic</option>
+            <option value="dorian">Dorian</option>
+            <option value="phrygian">Phrygian</option>
+            <option value="lydian">Lydian</option>
+            <option value="mixolydian">Mixolydian</option>
+          </select>
+
+          <label for="cutoffKnob" style="font-size: 0.77rem; color: var(--text-muted);">Cutoff:</label>
+          <input type="range" id="cutoffKnob" min="300" max="6000" value="2400">
+
+          <button type="button" class="btn btn-primary" id="btnTriggerArp">Play Arpeggio</button>
+        </div>
+
+        <canvas id="waveCanvas" width="680" height="90"></canvas>
+
+        <div class="keycap-grid" id="keycapMatrixContainer">
+          <button type="button" class="keycap-btn" id="btnKeycap0"><span>1</span><span>220Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap1"><span>2</span><span>233Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap2"><span>3</span><span>247Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap3"><span>4</span><span>262Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap4"><span>5</span><span>277Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap5"><span>6</span><span>294Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap6"><span>7</span><span>311Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap7"><span>8</span><span>330Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap8"><span>9</span><span>349Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap9"><span>0</span><span>370Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap10"><span>Q</span><span>392Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap11"><span>W</span><span>415Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap12"><span>E</span><span>440Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap13"><span>R</span><span>466Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap14"><span>T</span><span>494Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap15"><span>Y</span><span>523Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap16"><span>U</span><span>554Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap17"><span>I</span><span>587Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap18"><span>O</span><span>622Hz</span></button>
+          <button type="button" class="keycap-btn" id="btnKeycap19"><span>P</span><span>659Hz</span></button>
+        </div>
+      </div>
+
+      <div class="fold-hinge" id="foldHingeDivider" aria-hidden="true"></div>
+
+      <div class="synth-box" id="alexandriaQuestBox">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <h2 style="font-size: 1.02rem; margin: 0; color: var(--cyan);">🦉 SCHOLARS OF ALEXANDRIA &amp; THOTH'S CODEX</h2>
+          <button type="button" class="btn" id="btnBroadcastLibrary">📡 Sync Vault to Ecosystem Bus</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.77rem;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 8px;">
+            <strong style="color: var(--accent);">🦅 Thoth (Ibis Keeper)</strong>
+            <p style="margin: 4px 0 0; color: var(--text-muted);">Guard the sunlit Ptolemaic colonnade from drifting fire embers and catalog all 8 scrolls into the eternal Pinakes.</p>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 8px;">
+            <strong style="color: var(--cyan);">🔭 Hypatia of Alexandria</strong>
+            <p style="margin: 4px 0 0; color: var(--text-muted);">Master of the Astrolabe and Conic Sections; grants +5 WIS and +5 ARC when her scroll is recovered.</p>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 8px;">
+            <strong style="color: var(--accent);">🌍 Eratosthenes (Chief Librarian)</strong>
+            <p style="margin: 4px 0 0; color: var(--text-muted);">Measured Earth's circumference with midday solstice shadows between Syene and Alexandria.</p>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 8px;">
+            <strong style="color: var(--cyan);">⚙️ Hero of Alexandria</strong>
+            <p style="margin: 4px 0 0; color: var(--text-muted);">Pioneer of the Aeolipile steam turbine and programmable pneumatic temple automata.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="hawk-footer" id="hawkMandatoryFooter">
+      <div>
+        🦅 <strong>HawkLibrary</strong> · Powered by <strong>Forefront Hawk Full Stack Browser Development Platform</strong> (<code>forefronthawk.com</code> / <code>talon.forefronthawk.com</code> / <code>oar.forefronthawk.com</code> / <code>Michael@forefronthawk.com</code>) &amp; <strong>Gemini Aargon</strong>
+      </div>
+      <div style="font-family: var(--font-mono);">
+        Serial: <strong>FH-GA-ΩΑΡ-20261118-MFF-G01-HTM-26D07CB2</strong> ⇄ <strong>FH-GA-20261118-MFF-HTM-071F6AE6</strong> (CTVML Seed 0xC9483045)
+      </div>
+    </footer>
+  </div>
+
+  <div class="status-toast" id="hawkStatusToast" role="status" aria-live="polite">Ready</div>
+
+<script>
+(function() {
+  "use strict";
+
+  const OUTER_SERIAL = "FH-GA-ΩΑΡ-20261118-MFF-G01-HTM-26D07CB2";
+
+  // =========================================================================
+  // 1. ANCIENT KNOWLEDGE ASSET SCROLLS (8 CODED ALEXANDRIAN ASSETS IN 3D)
+  // =========================================================================
+  const ANCIENT_SCROLLS = [
+    {
+      id: "emerald_tablet", title: "The Emerald Tablet of Thoth", author: "Thoth / Hermes Trismegistus",
+      category: "Hermetic Axiom", era: "Antiquity", wis: 5, arc: 4, hz: 440.0, color: "#10B981", hexNum: 0x10B981,
+      pos3d: [-6.5, 0, -6.0], unlocked: true,
+      lore: "Foundational axiom of correspondence ('As above, so below') preserved in Thoth's inner sanctuary—serves as the stock template asset of HawkLibrary.",
+      formula: "Correspondence(Macro, Micro) = Harmonic_Resonance(440Hz)"
+    },
+    {
+      id: "pinakes_catalog", title: "Pinakes of Callimachus", author: "Callimachus of Cyrene",
+      category: "Universal Catalog", era: "c. 245 BC", wis: 4, arc: 2, hz: 392.0, color: "#D4AF37", hexNum: 0xD4AF37,
+      pos3d: [-6.5, 0, -1.5], unlocked: false,
+      lore: "The 120-scroll master bibliographic index of the Library of Alexandria—history's first structured metadata and asset registry.",
+      formula: "PinakesIndex[Category][Author] -> ScrollAssetURI"
+    },
+    {
+      id: "eratosthenes_earth", title: "Geographika & Earth Measure", author: "Eratosthenes of Cyrene",
+      category: "Geodesy & Math", era: "c. 240 BC", wis: 4, arc: 3, hz: 329.63, color: "#38BDF8", hexNum: 0x38BDF8,
+      pos3d: [-6.5, 0, 3.0], unlocked: false,
+      lore: "Calculated Earth's circumference by comparing the noon solstice shadow angle (7.2°, 1/50th of a circle) in Alexandria against a sunlit well in Syene.",
+      formula: "Circumference = Distance(Syene, Alexandria) * (360 / 7.2)"
+    },
+    {
+      id: "heros_aeolipile", title: "Hero's Aeolipile & Automata", author: "Hero of Alexandria",
+      category: "Mechanics & Steam", era: "c. 60 AD", wis: 3, arc: 5, hz: 293.66, color: "#F97316", hexNum: 0xF97316,
+      pos3d: [-6.5, 0, 7.5], unlocked: false,
+      lore: "Blueprint for the radial steam-jet turbine, automatic temple doors, and string-programmed mechanical theatres.",
+      formula: "Torque = SteamJetForce * SphereRadius * 2"
+    },
+    {
+      id: "euclid_elements", title: "Euclid's Elements (13 Books)", author: "Euclid of Alexandria",
+      category: "Sacred Geometry", era: "c. 300 BC", wis: 5, arc: 3, hz: 523.25, color: "#A855F7", hexNum: 0xA855F7,
+      pos3d: [6.5, 0, -6.0], unlocked: false,
+      lore: "Axiomatic geometric foundation covering plane geometry, prime numbers, golden ratios, and the five Platonic solids.",
+      formula: "a^2 + b^2 = c^2 | Phi = (1 + sqrt(5)) / 2"
+    },
+    {
+      id: "archimedes_mechanics", title: "Archimedes' Palimpsest", author: "Archimedes of Syracuse",
+      category: "Physics & Calculus", era: "c. 250 BC", wis: 4, arc: 5, hz: 261.63, color: "#FACC15", hexNum: 0xFACC15,
+      pos3d: [6.5, 0, -1.5], unlocked: false,
+      lore: "Method of mechanical theorems, buoyancy principles, compound pulleys, and early infinitesimal area exhaustion.",
+      formula: "F_buoyant = rho * g * V_displaced"
+    },
+    {
+      id: "hypatia_astrolabe", title: "Hypatia's Celestial Astrolabe", author: "Hypatia of Alexandria",
+      category: "Astronomy", era: "c. 400 AD", wis: 5, arc: 5, hz: 587.33, color: "#F472B6", hexNum: 0xF472B6,
+      pos3d: [6.5, 0, 3.0], unlocked: false,
+      lore: "Refined planispheric astrolabe and commentaries on Apollonius's Conics for navigating stars and planetary altitudes.",
+      formula: "StereographicProj(RA, Dec) -> BrassReticle(x, y)"
+    },
+    {
+      id: "pharos_beacon", title: "Pharos Optical Mirror Beacon", author: "Sostratus of Cnidus",
+      category: "Optical Signaling", era: "c. 280 BC", wis: 4, arc: 6, hz: 659.25, color: "#00F5D4", hexNum: 0x00F5D4,
+      pos3d: [6.5, 0, 7.5], unlocked: false,
+      lore: "Polished bronze parabolic mirrors atop the Lighthouse of Alexandria projecting focused sunlight and fire signals across the Mediterranean—spiritual ancestor of HawkFiber CTVML.",
+      formula: "OpticalBeam(650nm, 532nm, 450nm) -> 48 bits/symbol"
+    }
+  ];
+
+  const SCALE_INTERVALS = {
+    chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    dorian: [0, 2, 3, 5, 7, 9, 10, 12],
+    phrygian: [0, 1, 3, 5, 7, 8, 10, 12],
+    lydian: [0, 2, 4, 6, 7, 9, 11, 12],
+    mixolydian: [0, 2, 4, 5, 7, 9, 10, 12]
+  };
+
+  // =========================================================================
+  // 2. RPG & 3D CAMERA STATE
+  // =========================================================================
+  const state = {
+    silentGuard: true,
+    scaleMode: "chromatic",
+    cutoffFreq: 2400,
+    lastPlayedFreq: 440,
+    wavePhase: 0,
+    selectedScrollId: "emerald_tablet",
+    selectedScrollHtml: "",
+    searchQuery: "",
+    cameraMode: "3rd", // "3rd" (Origins over-the-shoulder Scribe) or "1st" (Discovery Tour)
+    camYaw: 0,
+    camPitch: 0.22,
+    player: { x: 0, z: 9.5, level: 1, xp: 0, wis: 14, arc: 12, embersBanished: 0, wardPulse: 0 },
+    keys: { w: false, a: false, s: false, d: false }
+  };
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const el = document.getElementById("hawkStatusToast");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("visible");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("visible"), 2400);
+  }
+
+  function getScroll(id) { return ANCIENT_SCROLLS.find(s => s.id === id) || ANCIENT_SCROLLS[0]; }
+
+  // =========================================================================
+  // 3. PRESERVED HAWKSTUDIO WEBAUDIO SYNTH & playArpeggioNote()
+  // =========================================================================
+  let audioCtx = null;
+  function getModalFrequency(idx) {
+    const intervals = SCALE_INTERVALS[state.scaleMode] || SCALE_INTERVALS.chromatic;
+    const oct = Math.floor(idx / intervals.length);
+    const deg = intervals[idx % intervals.length];
+    return Number((220 * Math.pow(2, (oct * 12 + deg) / 12)).toFixed(2));
+  }
+
+  function playArpeggioNote(freq) {
+    const safeFreq = Number(freq) || 440;
+    state.lastPlayedFreq = safeFreq;
+    state.wavePhase += 0.65;
+
+    if (state.silentGuard) {
+      console.log("Playing freq (0dB Silent Guard):", safeFreq);
+    } else {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) {
+          if (!audioCtx) audioCtx = new Ctx();
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const filt = audioCtx.createBiquadFilter();
+          const gain = audioCtx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(safeFreq, now);
+          filt.type = "lowpass";
+          filt.frequency.setValueAtTime(state.cutoffFreq, now);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(0.13, now + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+          osc.connect(filt);
+          filt.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.32);
+        }
+      } catch (e) { /* Safe fallback */ }
+    }
+    drawWaveCanvas();
+  }
+  window.playArpeggioNote = playArpeggioNote;
+
+  function drawWaveCanvas() {
+    const canvas = document.getElementById("waveCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.strokeStyle = state.silentGuard ? "#00F5D4" : "#D4AF37";
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    const cycles = Math.max(2, Math.min(16, state.lastPlayedFreq / 50));
+    for (let x = 0; x < w; x++) {
+      const t = (x / w) * Math.PI * 2 * cycles + state.wavePhase;
+      const y = h / 2 + (Math.sin(t) * 0.7 + Math.sin(t * 2) * 0.25) * (h * 0.35);
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "11px monospace";
+    ctx.fillText((state.silentGuard ? "0dB SILENT GUARD" : "LIVE ALEXANDRIA LYRE") + " | " + state.lastPlayedFreq.toFixed(1) + " Hz | Cutoff " + state.cutoffFreq + " Hz", 10, 15);
+  }
+
+  // =========================================================================
+  // 4. ANCIENT KNOWLEDGE ASSET HTML GENERATOR & VAULT UI
+  // =========================================================================
+  function buildScrollAssetHtml(sc) {
+    const closeScript = "<" + "/script>";
+    return [
+      "<!DOCTYPE html>",
+      "<html lang=\"en\">",
+      "<head>",
+      "<meta charset=\"utf-8\">",
+      "<title>HawkLibrary Asset — " + sc.title + "</title>",
+      "<style>",
+      "  body { margin: 0; padding: 24px; background: #070A12; color: #F8FAFC; font-family: system-ui, sans-serif; }",
+      "  .scroll-card { max-width: 740px; margin: 0 auto; background: #0D1322; border: 2px solid " + sc.color + "; border-radius: 16px; padding: 22px; }",
+      "  code { background: #060911; padding: 6px 10px; border-radius: 6px; display: block; color: #00F5D4; margin: 12px 0; }",
+      "</style>",
+      "</head>",
+      "<body>",
+      "  <div class=\"scroll-card\" id=\"hawkLibraryAssetRoot\">",
+      "    <h1>📜 " + sc.title + "</h1>",
+      "    <p><strong>Author:</strong> " + sc.author + " (" + sc.era + ") · <strong>Category:</strong> " + sc.category + "</p>",
+      "    <p>" + sc.lore + "</p>",
+      "    <code>" + sc.formula + "</code>",
+      "    <p style=\"font-size:0.8rem;color:#94A3B8;\">RPG Buffs: +" + sc.wis + " WIS · +" + sc.arc + " ARC · Harmonic Signature: " + sc.hz + " Hz</p>",
+      "    <p style=\"font-size:0.75rem;color:#94A3B8;\">Powered by Forefront Hawk (forefronthawk.com) &amp; Gemini Aargon · Serial: " + OUTER_SERIAL + "</p>",
+      "  </div>",
+      "<script>",
+      "  window.HAWKLIBRARY_ASSET = " + JSON.stringify({ id: sc.id, title: sc.title, author: sc.author, category: sc.category, formula: sc.formula, hz: sc.hz }) + ";",
+      closeScript,
+      "</body>",
+      "</html>"
+    ].join("\n");
+  }
+
+  function updateRpgStatsDom() {
+    const unlockedCount = ANCIENT_SCROLLS.filter(s => s.unlocked).length;
+    state.player.level = 1 + Math.floor(state.player.xp / 100);
+    document.getElementById("statLevel").textContent = "Lv. " + state.player.level + " (" + state.player.xp + " XP)";
+    document.getElementById("statWis").textContent = String(state.player.wis);
+    document.getElementById("statArc").textContent = String(state.player.arc);
+    document.getElementById("statScrolls").textContent = unlockedCount + " / " + ANCIENT_SCROLLS.length;
+    document.getElementById("statEmbers").textContent = String(state.player.embersBanished);
+    document.getElementById("vaultStatusBadge").textContent = unlockedCount + " / " + ANCIENT_SCROLLS.length + " Rescued";
+  }
+
+  function renderScrollVault() {
+    const grid = document.getElementById("scrollVaultGrid");
+    if (!grid) return;
+    const q = state.searchQuery.toLowerCase().trim();
+    const list = ANCIENT_SCROLLS.filter(s =>
+      !q || s.title.toLowerCase().includes(q) || s.author.toLowerCase().includes(q) || s.category.toLowerCase().includes(q)
+    );
+
+    grid.innerHTML = "";
+    list.forEach((sc) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "scroll-card" + (sc.id === state.selectedScrollId ? " selected" : "") + (sc.unlocked ? "" : " locked");
+      btn.id = "scrollVaultBtn_" + sc.id;
+      btn.innerHTML =
+        "<div style=\"display:flex;justify-content:space-between;font-weight:800;\"><span>" + (sc.unlocked ? "📜 " : "🔒 ") + sc.title + "</span></div>" +
+        "<div style=\"color:var(--text-muted);font-size:0.69rem;\">" + sc.author + " · " + sc.category + "</div>" +
+        "<div style=\"color:" + sc.color + ";font-family:var(--font-mono);font-size:0.68rem;\">+" + sc.wis + " WIS · +" + sc.arc + " ARC · " + Math.round(sc.hz) + "Hz</div>";
+      btn.addEventListener("click", () => selectScroll(sc.id));
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectScroll(scrollId) {
+    state.selectedScrollId = scrollId;
+    const sc = getScroll(scrollId);
+    document.getElementById("selectedScrollLoreBox").innerHTML =
+      "<strong style=\"color:" + sc.color + ";\">📜 " + sc.title + "</strong> (" + sc.author + ", " + sc.era + ") — " + sc.lore +
+      " <div style=\"margin-top:4px;font-family:var(--font-mono);color:var(--cyan);font-size:0.72rem;\">Axiom: " + sc.formula + "</div>";
+
+    const code = buildScrollAssetHtml(sc);
+    state.selectedScrollHtml = code;
+    document.getElementById("scrollAssetCodeOutput").value = code;
+    document.getElementById("assetCodeSizeLabel").textContent = code.length.toLocaleString() + " bytes · Standalone HTML5";
+
+    playArpeggioNote(sc.hz);
+    renderScrollVault();
+  }
+
+  function unlockScroll(sc) {
+    if (sc.unlocked) {
+      selectScroll(sc.id);
+      return;
+    }
+    sc.unlocked = true;
+    state.player.xp += 65;
+    state.player.wis += sc.wis;
+    state.player.arc += sc.arc;
+    document.getElementById("rpgDialogueBox").innerHTML =
+      "<strong style=\"color:" + sc.color + ";\">✨ Rescued " + sc.title + "!</strong> (" + sc.author + ") — " + sc.lore + " (+65 XP, +" + sc.wis + " WIS, +" + sc.arc + " ARC)";
+    updateRpgStatsDom();
+    selectScroll(sc.id);
+    showToast("Rescued Ancient Scroll: " + sc.title + "!");
+  }
+
+  // =========================================================================
+  // 5. THREE.JS 3D PTOLEMAIC ALEXANDRIA (ASSASSIN'S CREED ORIGINS STYLE)
+  // =========================================================================
+  let scene = null;
+  let camera = null;
+  let renderer = null;
+  let playerGroup = null;
+  let wardRingMesh = null;
+  let scrollMeshes = [];
+  let emberMeshes = [];
+  let raycaster = null;
+
+  function createAlexandriaFloorTexture() {
+    const c = document.createElement("canvas");
+    c.width = 512;
+    c.height = 512;
+    const ctx = c.getContext("2d");
+    // Warm sunlit Egyptian limestone & lapis mosaic
+    ctx.fillStyle = "#C9A878";
+    ctx.fillRect(0, 0, 512, 512);
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        ctx.fillStyle = (x + y) % 2 === 0 ? "#D6B78A" : "#BA9564";
+        ctx.fillRect(x * 64 + 2, y * 64 + 2, 60, 60);
+        if ((x + y) % 4 === 0) {
+          ctx.strokeStyle = "#1E4E79"; // Lapis lazuli inlay
+          ctx.lineWidth = 3;
+          ctx.strokeRect(x * 64 + 10, y * 64 + 10, 44, 44);
+        }
+      }
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(5, 7);
+    return tex;
+  }
+
+  function createScrollLabelSprite(text, hexColor) {
+    const c = document.createElement("canvas");
+    c.width = 320;
+    c.height = 68;
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "rgba(14, 11, 8, 0.85)";
+    ctx.fillRect(4, 4, 312, 60);
+    ctx.strokeStyle = hexColor;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(4, 4, 312, 60);
+    ctx.fillStyle = "#FEF3C7";
+    ctx.font = "bold 20px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(text, 160, 41);
+    const tex = new THREE.CanvasTexture(c);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
+    sp.scale.set(2.8, 0.6, 1);
+    return sp;
+  }
+
+  function initAlexandria3D() {
+    const container = document.getElementById("alexandria3DContainer");
+    if (!container || typeof THREE === "undefined") return;
+
+    scene = new THREE.Scene();
+    // Assassin's Creed Origins Golden-Hour Mediterranean Desert Sky & Haze
+    scene.background = new THREE.Color(0xD49B63);
+    scene.fog = new THREE.FogExp2(0xC98D52, 0.022);
+
+    const w = container.clientWidth || 760;
+    const h = container.clientHeight || 430;
+    camera = new THREE.PerspectiveCamera(62, w / h, 0.1, 140);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    container.innerHTML = "";
+    container.appendChild(renderer.domElement);
+    raycaster = new THREE.Raycaster();
+
+    // Warm Golden Sun + Hemisphere Mediterranean Sky Light
+    const hemi = new THREE.HemisphereLight(0xFFE6B8, 0x7A5733, 0.95);
+    scene.add(hemi);
+    const sun = new THREE.DirectionalLight(0xFFF0C8, 1.35);
+    sun.position.set(18, 28, 14);
+    scene.add(sun);
+
+    const thothGlow = new THREE.PointLight(0x00F5D4, 1.3, 18);
+    thothGlow.position.set(0, 4.2, -2.5);
+    scene.add(thothGlow);
+
+    // Sunlit Limestone Mosaic Courtyard Floor
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(30, 38),
+      new THREE.MeshStandardMaterial({ map: createAlexandriaFloorTexture(), roughness: 0.55 })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    scene.add(floor);
+
+    // Monumental Ptolemaic Sandstone Columns & Painted Lapis/Gold Capitals
+    const stoneMat = new THREE.MeshStandardMaterial({ color: 0xDFC191, roughness: 0.72 });
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xD4AF37, roughness: 0.32, metalness: 0.6 });
+    const lapisMat = new THREE.MeshStandardMaterial({ color: 0x1A4B7C, roughness: 0.45 });
+    const woodMat = new THREE.MeshStandardMaterial({ color: 0x5C3A21, roughness: 0.8 });
+
+    for (let z = -12; z <= 12; z += 4.8) {
+      [-9.5, 9.5].forEach((xPos) => {
+        // Column shaft
+        const col = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.78, 8.8, 16), stoneMat);
+        col.position.set(xPos, 4.4, z);
+        scene.add(col);
+        // Lapis & Gold lotus capital
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 0.7, 0.9, 16), lapisMat);
+        cap.position.set(xPos, 8.9, z);
+        scene.add(cap);
+        const abacus = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.4, 2.1), goldMat);
+        abacus.position.set(xPos, 9.5, z);
+        scene.add(abacus);
+      });
+    }
+
+    // Colonnade Roof Beams (Open Sunlit Central Courtyard Atrium)
+    [-9.5, 9.5].forEach((xPos) => {
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.1, 29), stoneMat);
+      beam.position.set(xPos, 10.2, 0);
+      scene.add(beam);
+
+      // Cedarwood Papyrus Bookcase Walls behind colonnade
+      const shelf = new THREE.Mesh(new THREE.BoxGeometry(1.2, 6.2, 26), woodMat);
+      shelf.position.set(xPos > 0 ? 12.2 : -12.2, 3.1, 0);
+      scene.add(shelf);
+    });
+
+    // Distant Pharos of Alexandria Lighthouse Silhouette & Golden Obelisk beyond North Arch
+    const pharosBase = new THREE.Mesh(new THREE.BoxGeometry(4.5, 14, 4.5), stoneMat);
+    pharosBase.position.set(0, 7, -34);
+    scene.add(pharosBase);
+    const pharosBeacon = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 16), new THREE.MeshBasicMaterial({ color: 0xFEF08A }));
+    pharosBeacon.position.set(0, 15.8, -34);
+    scene.add(pharosBeacon);
+
+    // Central Sanctuary of Thoth (Golden Obelisk + Emerald Tablet + Ibis Crest)
+    const sanctBase = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 3.1, 0.6, 8), lapisMat);
+    sanctBase.position.set(0, 0.3, -2.5);
+    scene.add(sanctBase);
+
+    const obelisk = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.75, 5.4, 4), goldMat);
+    obelisk.position.set(0, 3.3, -2.5);
+    scene.add(obelisk);
+
+    const obeliskTip = new THREE.Mesh(new THREE.ConeGeometry(0.45, 0.9, 4), new THREE.MeshBasicMaterial({ color: 0x00F5D4 }));
+    obeliskTip.position.set(0, 6.45, -2.5);
+    scene.add(obeliskTip);
+
+    const thothLabel = createScrollLabelSprite("🦅 SANCTUARY OF THOTH", "#D4AF37");
+    thothLabel.position.set(0, 7.6, -2.5);
+    scene.add(thothLabel);
+
+    // Build All 8 Glowing 3D Scroll Pedestals
+    scrollMeshes = [];
+    ANCIENT_SCROLLS.forEach((sc, idx) => {
+      const grp = new THREE.Group();
+      grp.position.set(sc.pos3d[0], 0, sc.pos3d[2]);
+      grp.userData = { scrollId: sc.id, phase: idx * 0.85 };
+
+      const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.7, 1.1, 8), stoneMat);
+      ped.position.y = 0.55;
+      ped.userData = { scrollId: sc.id };
+      grp.add(ped);
+
+      const orb = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.48, 0),
+        new THREE.MeshStandardMaterial({ color: sc.hexNum, emissive: sc.hexNum, emissiveIntensity: 0.45, roughness: 0.25 })
+      );
+      orb.position.y = 1.95;
+      orb.userData = { scrollId: sc.id };
+      grp.add(orb);
+
+      const label = createScrollLabelSprite(sc.title.slice(0, 18), sc.color);
+      label.position.y = 2.95;
+      grp.add(label);
+
+      scene.add(grp);
+      scrollMeshes.push({ group: grp, orb: orb, scroll: sc });
+    });
+
+    // Build 3D Hooded Scribe Avatar (Assassin's Creed Origins Linen & Gold Tunic)
+    playerGroup = new THREE.Group();
+    const robe = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.28, 0.48, 1.35, 14),
+      new THREE.MeshStandardMaterial({ color: 0xF5EFE0, roughness: 0.75 })
+    );
+    robe.position.y = 0.72;
+    playerGroup.add(robe);
+
+    const sash = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.35, 0.38, 0.28, 14),
+      new THREE.MeshStandardMaterial({ color: 0xB91C1C, roughness: 0.6 })
+    );
+    sash.position.y = 0.85;
+    playerGroup.add(sash);
+
+    const hood = new THREE.Mesh(
+      new THREE.ConeGeometry(0.32, 0.55, 12),
+      new THREE.MeshStandardMaterial({ color: 0xEFE6D5, roughness: 0.7 })
+    );
+    hood.position.y = 1.68;
+    playerGroup.add(hood);
+
+    playerGroup.position.set(state.player.x, 0, state.player.z);
+    scene.add(playerGroup);
+
+    // 3D Preservation Ward Shockwave Ring
+    wardRingMesh = new THREE.Mesh(
+      new THREE.RingGeometry(0.6, 0.95, 36),
+      new THREE.MeshBasicMaterial({ color: 0x00F5D4, side: THREE.DoubleSide, transparent: true, opacity: 0 })
+    );
+    wardRingMesh.rotation.x = -Math.PI / 2;
+    wardRingMesh.position.y = 0.15;
+    scene.add(wardRingMesh);
+
+    // 3D Drifting Fire Embers threatening the library stacks
+    emberMeshes = [];
+    const emberStarts = [[-4, -8], [5, -7], [-5, 6], [4.5, 5]];
+    emberStarts.forEach((p, idx) => {
+      const m = new THREE.Mesh(
+        new THREE.SphereGeometry(0.36, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0xF97316 })
+      );
+      m.position.set(p[0], 1.6, p[1]);
+      m.userData = { vx: (idx % 2 === 0 ? 0.035 : -0.035), vz: (idx < 2 ? 0.03 : -0.03) };
+      scene.add(m);
+      emberMeshes.push(m);
+    });
+
+    // Mouse Drag Camera Orbit + Click 3D Scroll Raycasting
+    let dragging = false;
+    let px = 0;
+    let py = 0;
+    let moved = 0;
+
+    renderer.domElement.addEventListener("mousedown", function(e) {
+      dragging = true;
+      px = e.clientX;
+      py = e.clientY;
+      moved = 0;
+    });
+    window.addEventListener("mouseup", () => { dragging = false; });
+    window.addEventListener("mousemove", function(e) {
+      if (!dragging) return;
+      const dx = e.clientX - px;
+      const dy = e.clientY - py;
+      moved += Math.abs(dx) + Math.abs(dy);
+      px = e.clientX;
+      py = e.clientY;
+      state.camYaw -= dx * 0.0055;
+      state.camPitch = Math.max(-0.25, Math.min(0.85, state.camPitch + dy * 0.0045));
+    });
+
+    renderer.domElement.addEventListener("click", function(e) {
+      if (moved > 8) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      raycaster.setFromCamera(mouse, camera);
+      const targets = scrollMeshes.map(s => s.group);
+      const hits = raycaster.intersectObjects(targets, true);
+      if (hits.length > 0) {
+        let obj = hits[0].object;
+        while (obj && !obj.userData.scrollId && obj.parent) obj = obj.parent;
+        if (obj && obj.userData.scrollId) {
+          const sc = getScroll(obj.userData.scrollId);
+          state.player.x = sc.pos3d[0] * 0.72;
+          state.player.z = sc.pos3d[2];
+          unlockScroll(sc);
+        }
+      }
+    });
+
+    window.addEventListener("resize", function() {
+      if (!renderer || !camera || !container) return;
+      const nw = container.clientWidth || 760;
+      const nh = container.clientHeight || 430;
+      camera.aspect = nw / nh;
+      camera.updateProjectionMatrix();
+      renderer.setSize(nw, nh);
+    });
+
+    let t = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      t += 0.02;
+
+      // Move Scribe relative to camera yaw
+      const spd = 0.14;
+      const fwdX = -Math.sin(state.camYaw);
+      const fwdZ = -Math.cos(state.camYaw);
+      const rightX = Math.cos(state.camYaw);
+      const rightZ = -Math.sin(state.camYaw);
+
+      if (state.keys.w) { state.player.x += fwdX * spd; state.player.z += fwdZ * spd; }
+      if (state.keys.s) { state.player.x -= fwdX * spd; state.player.z -= fwdZ * spd; }
+      if (state.keys.a) { state.player.x -= rightX * spd; state.player.z -= rightZ * spd; }
+      if (state.keys.d) { state.player.x += rightX * spd; state.player.z += rightZ * spd; }
+
+      state.player.x = Math.max(-8.2, Math.min(8.2, state.player.x));
+      state.player.z = Math.max(-11.0, Math.min(12.2, state.player.z));
+
+      playerGroup.position.set(state.player.x, 0, state.player.z);
+      playerGroup.rotation.y = state.camYaw;
+      playerGroup.visible = state.cameraMode === "3rd";
+
+      // Update Camera (3rd-Person Assassin's Creed Over-the-Shoulder vs 1st-Person Discovery Tour)
+      if (state.cameraMode === "3rd") {
+        const dist = 5.4;
+        camera.position.set(
+          state.player.x + Math.sin(state.camYaw) * dist,
+          2.8 + state.camPitch * 3.2,
+          state.player.z + Math.cos(state.camYaw) * dist
+        );
+        camera.lookAt(state.player.x, 1.5, state.player.z);
+      } else {
+        camera.position.set(state.player.x, 1.75, state.player.z);
+        camera.rotation.order = "YXZ";
+        camera.rotation.y = state.camYaw;
+        camera.rotation.x = -state.camPitch * 0.6;
+      }
+
+      // Animate Floating 3D Scroll Orbs & Auto-Claim on Proximity
+      scrollMeshes.forEach((item) => {
+        item.orb.rotation.y += 0.03;
+        item.orb.position.y = 1.95 + Math.sin(t * 2 + item.group.userData.phase) * 0.16;
+        if (!item.scroll.unlocked) {
+          const d = Math.hypot(state.player.x - item.scroll.pos3d[0], state.player.z - item.scroll.pos3d[2]);
+          if (d < 1.9) unlockScroll(item.scroll);
+        }
+      });
+
+      // Animate 3D Fire Embers
+      emberMeshes.forEach((em) => {
+        em.position.x += em.userData.vx;
+        em.position.z += em.userData.vz;
+        em.position.y = 1.5 + Math.sin(t * 4 + em.position.x) * 0.25;
+        if (em.position.x < -7.5 || em.position.x > 7.5) em.userData.vx *= -1;
+        if (em.position.z < -10 || em.position.z > 10) em.userData.vz *= -1;
+      });
+
+      // Animate 3D Ward Shockwave
+      if (state.player.wardPulse > 0) {
+        state.player.wardPulse = Math.max(0, state.player.wardPulse - 0.035);
+        const s = 1 + (1 - state.player.wardPulse) * 7.5;
+        wardRingMesh.position.set(state.player.x, 0.15, state.player.z);
+        wardRingMesh.scale.set(s, s, 1);
+        wardRingMesh.material.opacity = state.player.wardPulse * 0.9;
+      } else {
+        wardRingMesh.material.opacity = 0;
+      }
+
+      document.getElementById("hudCoordsChip").textContent =
+        "Pos: (" + state.player.x.toFixed(1) + ", " + state.player.z.toFixed(1) + ")";
+
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+
+  function castPreservationWard() {
+    state.player.wardPulse = 1.0;
+    let hits = 0;
+    emberMeshes.forEach((em) => {
+      const dist = Math.hypot(em.position.x - state.player.x, em.position.z - state.player.z);
+      if (dist < 6.8) {
+        hits += 1;
+        state.player.embersBanished += 1;
+        state.player.xp += 35;
+        em.position.set((Math.random() - 0.5) * 12, 1.6, Math.random() > 0.5 ? -9.5 : 9.5);
+      }
+    });
+    playArpeggioNote(hits > 0 ? 659.25 : 440);
+    updateRpgStatsDom();
+    if (hits > 0) {
+      document.getElementById("rpgDialogueBox").innerHTML =
+        "<strong style=\"color:var(--cyan);\">✨ Thoth's Preservation Ward:</strong> Banished " + hits + " fire ember(s) from the Great Library colonnade! (+" + (hits * 35) + " XP)";
+      showToast("Banished " + hits + " Library Ember(s)!");
+    } else {
+      showToast("Cast Thoth's Preservation Ward!");
+    }
+  }
+
+  function interactNearby() {
+    if (Math.hypot(state.player.x, state.player.z + 2.5) < 4.5) {
+      const rem = ANCIENT_SCROLLS.filter(s => !s.unlocked).length;
+      document.getElementById("rpgDialogueBox").innerHTML =
+        "<strong style=\"color:var(--accent);\">🦅 Thoth, Keeper of Alexandria:</strong> " +
+        (rem > 0
+          ? "You have rescued " + (8 - rem) + "/8 scrolls. Walk down the sunlit colonnade to claim the remaining " + rem + " floating scrolls!"
+          : "All 8 Alexandrian Scrolls are preserved in HawkLibrary and ready for export to HawkSuite!");
+      playArpeggioNote(440);
+      return;
+    }
+    for (let i = 0; i < ANCIENT_SCROLLS.length; i++) {
+      const sc = ANCIENT_SCROLLS[i];
+      if (Math.hypot(state.player.x - sc.pos3d[0], state.player.z - sc.pos3d[2]) < 3.6) {
+        unlockScroll(sc);
+        return;
+      }
+    }
+    showToast("Walk closer to Thoth's Sanctuary or a glowing 3D scroll, then press E!");
+  }
+
+  // =========================================================================
+  // 6. SAFE COPY, DOWNLOAD, POSTURE & EVENT BINDINGS
+  // =========================================================================
+  function copyTextSafe(text, label) {
+    let ok = false;
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-9999px";
+      ta.style.webkitUserSelect = "text";
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+    } catch (e) { ok = false; }
+    if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
+    showToast("Copied " + label + " to clipboard!");
+  }
+
+  function downloadFileSafe(filename, content, mimeType) {
+    try {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1200);
+      showToast("Downloaded " + filename + "!");
+    } catch (e) {
+      copyTextSafe(content, filename);
+    }
+  }
+
+  function setDevicePosture(posture) {
+    [document.documentElement, document.body].forEach((el) => {
+      el.setAttribute("data-device", posture);
+      el.setAttribute("data-self-device", posture);
+      el.setAttribute("data-hx-device", posture);
+    });
+    const map = { desktop: "btnPostureDesktop", mobile: "btnPostureMobile", fold: "btnPostureFold", tablet: "btnPostureTablet" };
+    Object.keys(map).forEach((k) => {
+      const b = document.getElementById(map[k]);
+      if (b) b.classList.toggle("active", k === posture);
+    });
+    setTimeout(() => window.dispatchEvent(new Event("resize")), 260);
+    showToast("Posture switched to " + posture.toUpperCase());
+  }
+
+  function toggleCameraPerspective() {
+    state.cameraMode = state.cameraMode === "3rd" ? "1st" : "3rd";
+    const btn = document.getElementById("btnToggleCamView");
+    if (btn) {
+      btn.textContent = state.cameraMode === "3rd" ? "🎥 Camera: 3rd-Person Scribe (C)" : "🎥 Camera: 1st-Person Discovery (C)";
+    }
+    showToast(state.cameraMode === "3rd" ? "Switched to 3rd-Person Scribe camera!" : "Switched to 1st-Person Discovery Tour camera!");
+  }
+
+  function bindAllControls() {
+    document.getElementById("btnPostureDesktop").addEventListener("click", () => setDevicePosture("desktop"));
+    document.getElementById("btnPostureMobile").addEventListener("click", () => setDevicePosture("mobile"));
+    document.getElementById("btnPostureFold").addEventListener("click", () => setDevicePosture("fold"));
+    document.getElementById("btnPostureTablet").addEventListener("click", () => setDevicePosture("tablet"));
+
+    const uiSel = document.getElementById("uiThemeSelect");
+    uiSel.addEventListener("change", () => {
+      document.documentElement.setAttribute("data-ui-theme", uiSel.value);
+      showToast("Theme: " + uiSel.options[uiSel.selectedIndex].text);
+    });
+
+    const btnGuard = document.getElementById("btnToggleAudioGuard");
+    btnGuard.addEventListener("click", function() {
+      state.silentGuard = !state.silentGuard;
+      btnGuard.textContent = state.silentGuard ? "🔇 0dB Silent Guard: ON" : "🔊 Live WebAudio Lyre: ON";
+      btnGuard.classList.toggle("active", !state.silentGuard);
+      drawWaveCanvas();
+      showToast(state.silentGuard ? "0dB Silent Boot Guard enabled." : "Live WebAudio Alexandrian Lyre enabled!");
+    });
+
+    document.getElementById("btnToggleCamView").addEventListener("click", toggleCameraPerspective);
+    document.getElementById("btnCastWard").addEventListener("click", castPreservationWard);
+    document.getElementById("btnInteractNpc").addEventListener("click", interactNearby);
+
+    document.getElementById("btnUnlockAllScrolls").addEventListener("click", function() {
+      ANCIENT_SCROLLS.forEach((sc) => {
+        if (!sc.unlocked) {
+          sc.unlocked = true;
+          state.player.xp += 65;
+          state.player.wis += sc.wis;
+          state.player.arc += sc.arc;
+        }
+      });
+      updateRpgStatsDom();
+      renderScrollVault();
+      showToast("All 8 Alexandrian Scrolls unlocked in HawkLibrary!");
+    });
+
+    document.getElementById("btnResetRpg").addEventListener("click", function() {
+      state.player.x = 0;
+      state.player.z = 9.5;
+      state.player.xp = 0;
+      state.player.wis = 14;
+      state.player.arc = 12;
+      state.player.embersBanished = 0;
+      ANCIENT_SCROLLS.forEach((sc, idx) => { sc.unlocked = idx === 0; });
+      updateRpgStatsDom();
+      selectScroll("emerald_tablet");
+      showToast("Reset the 3D Great Library of Alexandria.");
+    });
+
+    function bindDir(btnId, key, dx, dz) {
+      const b = document.getElementById(btnId);
+      b.addEventListener("mousedown", () => { state.keys[key] = true; });
+      b.addEventListener("mouseup", () => { state.keys[key] = false; });
+      b.addEventListener("mouseleave", () => { state.keys[key] = false; });
+      b.addEventListener("click", () => { state.player.x += dx; state.player.z += dz; });
+    }
+    bindDir("btnMoveLeft", "a", -1.4, 0);
+    bindDir("btnMoveRight", "d", 1.4, 0);
+    bindDir("btnMoveUp", "w", 0, -1.4);
+    bindDir("btnMoveDown", "s", 0, 1.4);
+
+    window.addEventListener("keydown", function(e) {
+      if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) return;
+      const k = e.key.toLowerCase();
+      if (k === "w" || e.key === "ArrowUp") state.keys.w = true;
+      if (k === "s" || e.key === "ArrowDown") state.keys.s = true;
+      if (k === "a" || e.key === "ArrowLeft") state.keys.a = true;
+      if (k === "d" || e.key === "ArrowRight") state.keys.d = true;
+      if (k === "e") interactNearby();
+      if (k === "c") toggleCameraPerspective();
+      if (e.key === " ") { e.preventDefault(); castPreservationWard(); }
+    });
+    window.addEventListener("keyup", function(e) {
+      const k = e.key.toLowerCase();
+      if (k === "w" || e.key === "ArrowUp") state.keys.w = false;
+      if (k === "s" || e.key === "ArrowDown") state.keys.s = false;
+      if (k === "a" || e.key === "ArrowLeft") state.keys.a = false;
+      if (k === "d" || e.key === "ArrowRight") state.keys.d = false;
+    });
+
+    document.getElementById("scrollSearchInput").addEventListener("input", function(e) {
+      state.searchQuery = e.target.value;
+      renderScrollVault();
+    });
+
+    document.getElementById("btnDownloadScrollHtml").addEventListener("click", function() {
+      const sc = getScroll(state.selectedScrollId);
+      downloadFileSafe("hawklibrary_" + sc.id + ".html", state.selectedScrollHtml, "text/html");
+    });
+
+    document.getElementById("btnCopyScrollHtml").addEventListener("click", function() {
+      const sc = getScroll(state.selectedScrollId);
+      copyTextSafe(state.selectedScrollHtml, sc.title + " HTML Asset");
+    });
+
+    document.getElementById("btnExportFullLibraryJson").addEventListener("click", function() {
+      const bundle = {
+        app: "HawkLibrary — 3D Ptolemaic Alexandria & Thoth Fantasy RPG",
+        platform: "Forefront Hawk (forefronthawk.com) & Gemini Aargon",
+        serial: OUTER_SERIAL,
+        scrollAssets: ANCIENT_SCROLLS.map(sc => Object.assign({}, sc, { htmlAsset: buildScrollAssetHtml(sc) }))
+      };
+      downloadFileSafe("hawklibrary_alexandria_vault.json", JSON.stringify(bundle, null, 2), "application/json");
+    });
+
+    document.getElementById("btnBroadcastLibrary").addEventListener("click", function() {
+      try {
+        if (typeof BroadcastChannel !== "undefined") {
+          const ch = new BroadcastChannel("hawk_creator_ecosystem_v1");
+          ch.postMessage({ type: "HAWKLIBRARY_VAULT_SYNC", serial: OUTER_SERIAL, scrollCount: ANCIENT_SCROLLS.length });
+          ch.close();
+        }
+      } catch (e) { /* Safe fallback */ }
+      showToast("Synced HawkLibrary Ancient Knowledge Vault to hawk_creator_ecosystem_v1!");
+    });
+
+    document.getElementById("btnTriggerArp").addEventListener("click", function() {
+      [0, 2, 4, 7].forEach((deg, idx) => {
+        setTimeout(() => playArpeggioNote(getModalFrequency(deg)), idx * 105);
+      });
+    });
+
+    document.getElementById("scaleModeSelect").addEventListener("change", function(e) {
+      state.scaleMode = e.target.value;
+      playArpeggioNote(getModalFrequency(0));
+    });
+
+    document.getElementById("cutoffKnob").addEventListener("input", function(e) {
+      state.cutoffFreq = Number(e.target.value) || 2400;
+      drawWaveCanvas();
+    });
+
+    document.querySelectorAll("#keycapMatrixContainer .keycap-btn").forEach((kb, i) => {
+      kb.addEventListener("click", () => playArpeggioNote(getModalFrequency(i)));
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", function() {
+    bindAllControls();
+    updateRpgStatsDom();
+    selectScroll("emerald_tablet");
+    drawWaveCanvas();
+    initAlexandria3D();
+  });
+})();
+</script>
+</body>
+</html>
